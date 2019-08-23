@@ -1,0 +1,10 @@
+Makefile
+*.pc
+*.cmake
+CMakeCache.txt
+CMakeFiles
+test-*
+Testing
+*.so
+*.so.*
+*.o
