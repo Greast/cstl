@@ -4,17 +4,19 @@
 #include <stddef.h>
 #include <setjmp.h>
 #include <cmocka.h>
+#include <stdio.h>
 #include "cstl/cstl.h"
-struct LIST_HEAD(cmocka_unit_test_list, CMUnitTest);
+
+struct LIST(cmocka_unit_test_list, struct CMUnitTest);
 
 extern struct cmocka_unit_test_list * CMOCKA_UNIT_TEST_LIST;
 
-#define TEST_FUNCTION(name, state) \
-  static void name(void **); \
+#define TEST_FUNCTION(function_name, state) \
+  static void function_name(void **); \
   __attribute__((constructor)) \
-  static void name ## _init(){ \
-    LIST_ADD(&CMOCKA_UNIT_TEST_LIST, cmocka_unit_test(name)); \
+  static void function_name ## _init(){ \
+    LIST_ADD(&CMOCKA_UNIT_TEST_LIST, cmocka_unit_test(function_name)); \
   } \
-  static void name(void ** state)
+  static void function_name(void ** state)
 
 #endif /* end of include guard: __TESTS_MACRO __CSTL__H_*/

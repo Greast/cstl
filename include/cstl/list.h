@@ -1,23 +1,23 @@
 #ifndef __CTSL_LIST_H_
 #define __CTSL_LIST_H_
 #include "cstl/alloc.h"
-
-#define LIST_HEAD(name, inner) name { \
+#include "cstl/optional.h"
+#define LIST(name, inner) name { \
   struct name * next; \
-  struct inner data;\
+  inner data;\
 }
 
 #define LIST_ADD(variable, element) ({ \
   typeof(**variable) var; \
-  var.next = (*variable); \
+  var.next = (*(variable)); \
   var.data = (typeof(var.data)) element;\
   *variable = HEAPIFY(var);\
-  *variable; \
+  variable; \
 })
 
 #define LIST_SIZE(list) ({\
   size_t i = 0;\
-  for(;list ; list = list -> next, ++i);\
+  for(auto_t l = list ; l ; l = l -> next, ++i);\
   i;\
 })
 
@@ -41,11 +41,6 @@
   list;\
 })
 
-#define LIST(...) ({ \
-  auto_t array = {__VA_ARGS__}; \
-  LIST_FROM_ARRAY(array, sizeof(array)/sizeof(*array));\
-})
-
 #define LIST_CMP(lhs, rhs, function)({\
   while(lhs & rhs){\
     const int ret = function(&lhs->data, &rhs->data);\
@@ -55,6 +50,17 @@
   return lhs - rhs;\
 })
 
+#define LIST_GET(list, index)({\
+  struct OPTIONAL(list_get_optional, typeof(list));\
+  for (auto_t l = list ; l && index ; l = l ->next ; --index ) ;\
+  if(l) {\
+    list_get_optional ret = OPTIONAL_SOME(l->data);\
+    return ret;\
+  } else {\
+    list_get_optional ret = OPTIONAL_NONE();\
+    return ret;\
+  }\
+})
 
 
 #endif /* end of include guard: __CTSL_LIST_H_ */
